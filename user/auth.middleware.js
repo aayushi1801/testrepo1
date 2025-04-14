@@ -7,7 +7,10 @@ const authenticate = (req, res, next) => {
         return res.status(401).json({ message: 'Access denied. No token provided.' });
     }
 
-    const token = authHeader.split(' ')[1]; 
+    const token = authHeader.split(" ")[1]; 
+    if(!token){
+        return res.status(401).json({ message: 'Access denied. No token provided.' });
+    }
 
     try {
         const decoded = jwt.verify(token, '01');
@@ -18,4 +21,6 @@ const authenticate = (req, res, next) => {
     }
 };
 
-module.exports = authenticate;
+module.exports = {
+    authenticate,
+};

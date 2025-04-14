@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const userRoutes = require('./user/user.routes')
+const userRoutes = require('../testrepo1/user/user.routes.js')
 app.use(express.json());
 const mongoose = require('mongoose');
 
@@ -11,6 +11,6 @@ mongoose.connect('mongodb://localhost:27017/newDb')
 app.use('/api',userRoutes);
 
 
-app.listen(3000,()=>{
-    console.log('server is running on port 3000')
+app.listen(3333,()=>{
+    console.log('server is running on port 3333')
 })      

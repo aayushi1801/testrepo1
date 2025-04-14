@@ -10,21 +10,19 @@ const createUser = async (req, res) => {
         const newUser = new User({ name, email, age, password: hashedPassword });
         await newUser.save();
 
-        const payload = {
-            email: User.email,
-            password: User.password,
-        }
+        const token = jwt.sign(
+            { userId: newUser.email, email: newUser.password },
+            '01',
+            { expiresIn: '3d' }
+        );
 
-        const token =jwt.sign(payload,'1801',{expiresIn:'10d'});
-
-        res.status(201).json({ message: 'User created successfully', user: newUser ,token:token });
+        res.status(201).json({ message: 'User created successfully', user: newUser, token: token });
     } catch (error){
      console.error("Create User Error:", error);
      
         res.status(500).json({ message: 'Error creating user', error });
     }
 };
-
 
 const getAllUsers = async (req, res) => {
     try {
@@ -34,9 +32,6 @@ const getAllUsers = async (req, res) => {
         res.status(500).json({ message: 'Error getting users', error });
     }
 };
-
-
-
 
 const updateUser = async (req, res) => {
     try {
@@ -75,19 +70,14 @@ const loginUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        if (user.password !== password) {
-            return res.status(401).json({ message: 'Invalid password' });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'password does not match' });
         }
-        const token = jwt.sign(
-            { userId: user.email, email: user.password },
-            '01',
-            { expiresIn: '3d' }
-        );
 
         res.status(200).json({
             message: 'Login successful',
             user: { name: user.name, email: user.email },
-            token: token
         });
 
     } catch (error) {
